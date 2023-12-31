@@ -7,8 +7,10 @@ import {
   MenuItem,
   Select,
   TextField,
+  Button,
 } from "@mui/material";
 import { Formik } from "formik";
+import ResponseCard from "./ResponseCard";
 const Converter = ({ currencyList }) => {
   console.log(currencyList, "curre");
   const initialValues = {
@@ -82,8 +84,13 @@ const Converter = ({ currencyList }) => {
               </Box>
             </Grid>
 
-            <button type="submit">Submit</button>
+            <Grid item xs={12} md={4}>
+              <Button type="submit" variant="contained" color="primary">
+                Convret
+              </Button>
+            </Grid>
           </Grid>
+          <ResponseCard />
         </form>
       )}
     </Formik>
