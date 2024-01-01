@@ -22,10 +22,10 @@ const MainPage = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <Header />
       <Converter currencyList={currencyList} />
-    </div>
+    </>
   );
 };
 

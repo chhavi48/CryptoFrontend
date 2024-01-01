@@ -12,9 +12,11 @@ import {
 } from "@mui/material";
 import { Formik } from "formik";
 import ResponseCard from "./ResponseCard";
+import AutorenewOutlinedIcon from "@mui/icons-material/AutorenewOutlined";
 import axios from "axios";
 const Converter = ({ currencyList }) => {
   const [result, setResult] = useState("");
+  const [submitLoader, setSubmitLoader] = useState(false);
   const initialValues = {
     currencyId: "",
     amount: "",
@@ -22,6 +24,7 @@ const Converter = ({ currencyList }) => {
   };
 
   const handleSubmit = async (values) => {
+    setSubmitLoader(true);
     try {
       const response = await axios.post(
         `http://localhost:8080/api/convert`,
@@ -29,6 +32,7 @@ const Converter = ({ currencyList }) => {
       );
 
       setResult(response?.data?.convertedAmount);
+      setSubmitLoader(false);
     } catch (error) {
       console.log(error);
     }
@@ -116,7 +120,7 @@ const Converter = ({ currencyList }) => {
 
             <Grid item xs={12} md={4}>
               <Button type="submit" variant="contained" color="primary">
-                Convert
+                {submitLoader ? <AutorenewOutlinedIcon /> : "Convert"}
               </Button>
             </Grid>
           </Grid>
