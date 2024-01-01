@@ -9,7 +9,7 @@ const MainPage = () => {
   const getCurrencyList = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/cryptocurrencies`
+        `https://backend-wlmb.vercel.app/api/cryptocurrencies`
       );
       setCurrencyList(response?.data);
     } catch (error) {
