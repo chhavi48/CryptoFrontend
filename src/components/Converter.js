@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   FormControl,
@@ -8,22 +8,34 @@ import {
   Select,
   TextField,
   Button,
+  Autocomplete,
 } from "@mui/material";
 import { Formik } from "formik";
 import ResponseCard from "./ResponseCard";
+import axios from "axios";
 const Converter = ({ currencyList }) => {
-  console.log(currencyList, "curre");
+  const [result, setResult] = useState("");
   const initialValues = {
-    cuurency: "",
+    currencyId: "",
     amount: "",
-    targetedCurrency: "",
+    targetCurrency: "",
   };
-  const handleSubmit = (values) => {
-    console.log(values, "values");
+
+  const handleSubmit = async (values) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/convert`,
+        values
+      );
+
+      setResult(response?.data?.convertedAmount);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-      {({ values, handleChange, handleSubmit }) => (
+      {({ values, handleChange, handleSubmit, setFieldValue }) => (
         <form onSubmit={handleSubmit}>
           <Grid
             sx={{
@@ -34,23 +46,35 @@ const Converter = ({ currencyList }) => {
           >
             <Grid item xs={12} md={4}>
               <Box minWidth={160}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Select your Currency
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    // value={values}
-                    name="cuurency"
-                    label="Select Your currency"
-                    onChange={handleChange}
-                  >
-                    {currencyList.map((data, key) => (
-                      <MenuItem value={data?.id}>{data?.name}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  name="currencyId"
+                  id="country-select-demo"
+                  options={currencyList}
+                  autoHighlight
+                  getOptionLabel={(option) => option.name}
+                  onChange={(e, newValues) => {
+                    setFieldValue("currencyId", newValues?.id);
+                  }}
+                  renderOption={(props, option) => (
+                    <Box
+                      component="li"
+                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      {...props}
+                    >
+                      {option.name}
+                    </Box>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select Your Currency"
+                      inputProps={{
+                        ...params.inputProps,
+                        autoComplete: "new-password",
+                      }}
+                    />
+                  )}
+                />
               </Box>
             </Grid>
             <Grid item xs={12} md={4}>
@@ -71,14 +95,20 @@ const Converter = ({ currencyList }) => {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    // value={values}
-                    name="targetedCurrency"
+                    name="targetCurrency"
                     label="Targeted Currency"
                     onChange={handleChange}
                   >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    <MenuItem value="inr">INR</MenuItem>
+                    <MenuItem value="usd">USD</MenuItem>
+                    <MenuItem value="eur">EUR</MenuItem>
+                    <MenuItem value="jpy">JPY</MenuItem>
+                    <MenuItem value="gbp">GBP</MenuItem>
+                    <MenuItem value="aud">AUD</MenuItem>
+                    <MenuItem value="cad">CAD</MenuItem>
+                    <MenuItem value="chf">CHF</MenuItem>
+                    <MenuItem value="hkd">HKD</MenuItem>
+                    <MenuItem value="nzd">NZD</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -86,11 +116,13 @@ const Converter = ({ currencyList }) => {
 
             <Grid item xs={12} md={4}>
               <Button type="submit" variant="contained" color="primary">
-                Convret
+                Convert
               </Button>
             </Grid>
           </Grid>
-          <ResponseCard />
+          <Grid item xs={12} md={4} />
+
+          <ResponseCard result={result} />
         </form>
       )}
     </Formik>
